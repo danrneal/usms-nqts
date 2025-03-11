@@ -82,7 +82,9 @@ def main():
                     ):
                         line.append("NO TIME")
                     else:
-                        time = top_nqts[course][gender][age_group][event]["time"]
+                        time = top_nqts[course][gender][age_group][event][
+                            "time"
+                        ]
                         minutes, seconds = divmod(time.seconds, 60)
                         hours, minutes = divmod(minutes, 60)
                         hundrenths = round(time.microseconds / 10000)
@@ -137,7 +139,10 @@ def parse_nqts():
                             if AGE_GROUPS[j] not in nqts[course][gender]:
                                 nqts[course][gender][AGE_GROUPS[j]] = {}
 
-                            if event not in nqts[course][gender][AGE_GROUPS[j]]:
+                            if (
+                                event
+                                not in nqts[course][gender][AGE_GROUPS[j]]
+                            ):
                                 nqts[course][gender][AGE_GROUPS[j]][event] = []
 
                             if time != "NT":
@@ -146,7 +151,8 @@ def parse_nqts():
                                     minutes, seconds = time.split(":")
 
                                 time = timedelta(
-                                    minutes=int(minutes), seconds=float(seconds)
+                                    minutes=int(minutes),
+                                    seconds=float(seconds),
                                 )
 
                             nqts[course][gender][AGE_GROUPS[j]][event].append(
@@ -211,7 +217,10 @@ def calculate_top_nqts(nqts):
                         top_nqts[course][gender][age_group] = {}
 
                     for nqt in nqts[course][gender][age_group][event]:
-                        if nqt["time"] != "NT" and nqt["time"] < best_nqt["time"]:
+                        if (
+                            nqt["time"] != "NT"
+                            and nqt["time"] < best_nqt["time"]
+                        ):
                             best_nqt = nqt
 
                     top_nqts[course][gender][age_group][event] = best_nqt

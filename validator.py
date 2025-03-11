@@ -77,8 +77,13 @@ def main():
                     top_10 = get_top_10(course, year, gender, age_group)
                     for event in EVENTS[course]:
                         nqt = calculate_nqt(course, year, event, top_10)
-                        actual_nqt = nqts[year][course][gender][age_group][event]
-                        if nqt == timedelta.max and actual_nqt == timedelta.max:
+                        actual_nqt = nqts[year][course][gender][age_group][
+                            event
+                        ]
+                        if (
+                            nqt == timedelta.max
+                            and actual_nqt == timedelta.max
+                        ):
                             continue
 
                         if nqt == timedelta.max or actual_nqt == timedelta.max:
@@ -146,10 +151,13 @@ def parse_nqts():
                                     minutes, seconds = time.split(":")
 
                                 time = timedelta(
-                                    minutes=int(minutes), seconds=float(seconds)
+                                    minutes=int(minutes),
+                                    seconds=float(seconds),
                                 )
 
-                            nqts[year][course][gender][AGE_GROUPS[j]][event] = time
+                            nqts[year][course][gender][AGE_GROUPS[j]][
+                                event
+                            ] = time
                     else:
                         print(
                             f"Error parsing line {i} of "
@@ -177,7 +185,9 @@ def get_top_10(course, year, gender, age_group):
         top_10[course][gender][age_group][str(year)] = {}
         course_id = COURSES.index(course) + 1
         age_group_id = AGE_GROUPS.index(age_group) + 1
-        print(f"Getting Top 10 Times for {year} {course} {gender} {age_group}.")
+        print(
+            f"Getting Top 10 Times for {year} {course} {gender} {age_group}."
+        )
         url = (
             f"https://www.usms.org/comp/tt/toptenlist.php?CourseID={course_id}"
             f"&Year={year}&Sex={gender[0]}&AgeGroupID={age_group_id}"
@@ -185,7 +195,9 @@ def get_top_10(course, year, gender, age_group):
         r = session.get(url)
         for event in EVENTS[course]:
             top_10[course][gender][age_group][str(year)][event] = {}
-            table = r.html.find(f"#Event{event.replace(' ' , '')} + table", first=True)
+            table = r.html.find(
+                f"#Event{event.replace(' ' , '')} + table", first=True
+            )
             if not table:
                 continue
 
@@ -197,14 +209,13 @@ def get_top_10(course, year, gender, age_group):
                 and len(rows[j].find("th")) == 0
             ):
                 cells = rows[j].find("td")
-                top_10[course][gender][age_group][str(year)][event][j] = cells[5].text
+                top_10[course][gender][age_group][str(year)][event][j] = cells[
+                    5
+                ].text
                 j += 1
 
         with open(f"top_10.json", "w") as f:
             json.dump(top_10, f, indent=2)
-
-    with open(f"top_10-old.json") as f:
-        top_10_old = json.load(f)
 
     return top_10[course][gender][age_group]
 
@@ -242,7 +253,7 @@ def calculate_nqt(course, year, event, top_10):
 def get_place(year, event, top_10, place):
     times = []
     for i in range(1, 4):
-        if str(year-i) not in top_10:
+        if str(year - i) not in top_10:
             return times
 
         if place in top_10[str(year - i)][event]:
